@@ -6,7 +6,10 @@ from django.shortcuts import get_object_or_404
 def panorama_detail(request, pk):
     try:
         markers = []
-        panorama = get_object_or_404(Panorama, id=pk)
+        if (pk==-1):
+            panorama = Panorama.objects.first()
+        else:
+            panorama = get_object_or_404(Panorama, id=pk)
         for marker in panorama.markers.all():
             markers.append({
                 'id': marker.id,

@@ -19,7 +19,7 @@ class PanoramaViewer {
         `)}`;
     }  
 
-    async initViewer(initialPanoramaId = 5) {
+    async initViewer(initialPanoramaId = -1) {
         const { panorama, markers } = await this.fetchPanoramaData(initialPanoramaId);
         this.showLoader();
         
