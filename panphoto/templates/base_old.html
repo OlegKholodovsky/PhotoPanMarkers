@@ -1,0 +1,18 @@
+<!-- templates/base.html -->
+ <!DOCTYPE html>
+ <html>
+ <head>
+    <meta charset="UTF-8">
+    <!-- Подключаем Photo Sphere Viewer -->
+    <link href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+    <!-- Подключаем плагин маркеров -->
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.min.js"></script>
+    <style>
+        #viewer { width: 100%; height: 80vh; }
+    </style>
+</head>
+
+{% block content %}
+{% endblock content %}
+</html>

@@ -1,0 +1,186 @@
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewer = new PhotoSphereViewer.Viewer({
+                container: document.getElementById('viewer-container'),
+                panorama: '{{ panorama.image.url }}',
+                loadingImg: '{%  static "images/loader.gif" %}',
+                defaultZoomLvl: 50,
+                plugins: [
+                    [PhotoSphereViewer.MarkersPlugin, {
+                        // Маркеры
+                        markers: [
+                            {% for marker in markers %}
+                            {
+                                id: 'marker-{{ marker.id }}',
+                                longitude: {{ marker.longitude }},
+                                latitude: {{ marker.latitude }},
+                                image: '{% static "images/pin-red.png" %}',
+                                width: {{ marker.size.width }},
+                                height: {{ marker.size.height }},
+                                anchor: 'bottom center',
+                                tooltip: {
+                                    content: '{{ marker.text }}',
+                                    className: 'psv-marker-tooltip'
+                                },
+                                data: {
+                                    {% if marker.linked_panorama %}
+                                    linkedPanoramaId: {{ marker.linked_panorama.id }}
+                                    {% endif %}
+                                }
+                            },
+                            {% endfor %}
+                        ]
+                    }]
+                ]
+            });
+
+            // Обработка клика на маркер
+            viewer.on('select-marker', (e, marker) => {
+                if (marker.data.linkedPanoramaId) {
+                    viewer.animate({
+                        longitude: marker.longitude,
+                        latitude: marker.latitude,
+                        zoom: 90,
+                        speed: '5rpm'
+                    }).then(() => {
+                        window.location.href = `/panorama/${marker.data.linkedPanoramaId}/`;
+                    });
+                }
+            });
+        });
+
+
+------
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Конфигурация маркеров
+            const markersData = [
+                {% for marker in markers %}
+                {
+                    id: 'marker-{{ marker.id }}',
+                    longitude: {{ marker.longitude }},
+                    latitude: {{ marker.latitude }},
+                    image: "{% static 'images/pin-red.png' %}",
+                    width: {{ 32 }},
+                    height: {{ 32 }},
+                    anchor: 'bottom center',
+                    tooltip: {
+                        content: '{{ marker.text|escapejs }}',
+                        position: 'right bottom'
+                    },
+                    data: {
+                        {% if marker.linked_panorama %}
+                        linkedId: {{ marker.linked_panorama.id }}
+                        {% endif %}
+                    }
+                },
+                {% endfor %}
+            ];
+
+                    // Проверьте, что координаты в допустимых диапазонах
+        console.log('Проверка координат маркеров:');
+        markersData.forEach(marker => {
+            console.log(`Маркер ${marker.id}:`, {
+            longitude: marker.longitude + '°', // Должно быть 0-360
+            latitude: marker.latitude + '°'    // Должно быть -90 до +90
+            });
+        });
+            // Инициализация viewer
+            const viewer = new PhotoSphereViewer.Viewer({
+                container: document.getElementById('viewer'),
+                panorama: '{{ panorama.image.url }}',
+                plugins: [
+                    [PhotoSphereViewer.MarkersPlugin, {
+                        markers: markersData
+                    }]
+                ]
+            });
+
+            // Обработка кликов на маркеры
+            viewer.on('select-marker', (e, marker) => {
+                if (marker.data.linkedId) {
+                    viewer.animate({
+                        longitude: marker.longitude,
+                        latitude: marker.latitude,
+                        zoom: 90,
+                        speed: '5rpm'
+                    }).then(() => {
+                        window.location.href = `/panorama/${marker.data.linkedId}/`;
+                    });
+                } else {
+                    viewer.setTooltip(marker.id, {
+                        content: `Выбрано: ${marker.config.tooltip.content}`,
+                        position: 'right bottom'
+                    });
+                }
+            });
+
+            // Вывод отладочной информации
+            console.log('Маркеры:', markersData);
+        });
+
+
+------
+
+
+            // Данные маркеров с проверкой
+            const markersData = [
+                {% for marker in markers %}
+                {
+                    id: 'marker-{{ marker.id }}',
+                    longitude: {{ marker.longitude }},
+                    latitude: {{ marker.longitude }},
+                    image: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+                    width: 25,
+                    height: 41,
+                    anchor: 'bottom center',
+                    tooltip: {
+                        content: '{{ marker.text|escapejs }}',
+                        position: 'right bottom'
+                    },
+                    data: {
+                        {% if marker.linked_panorama %}
+                        linkedId: {{ marker.linked_panorama.id }}
+                        {% endif %}
+                    }
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            // Проверка данных перед инициализацией
+            console.log('Загружены маркеры:', markersData);
+            
+            // Создаем инстанс viewer
+            const viewer = new PhotoSphereViewer.Viewer({
+                container: document.getElementById('viewer'),
+                panorama: '{{ panorama.image.url }}',
+                plugins: [
+                    [PhotoSphereViewer.MarkersPlugin, {
+                        markers: markersData,
+                        // Режим отладки
+                        clickEventOnMarker: true,
+                        // Визуальные подсказки
+                        renderTooltip: (marker) => {
+                            console.log('Рендеринг маркера:', marker);
+                            return marker.config.tooltip;
+                        }
+                    }]
+                ]
+            });
+
+            // События для диагностики
+            viewer.on('ready', () => {
+                console.log('Панорама загружена, проверяем маркеры...');
+
+                const markersPlugin = viewer.getPlugin('markers');
+                const currentMarkers = markersPlugin.markers;
+                console.log('Загруженные маркеры:', currentMarkers);
+
+                
+
+                viewer.getPlugin(PhotoSphereViewer.MarkersPlugin).getMarkers().forEach(marker => {
+                    console.log('Доступный маркер:', marker);
+                });
+            });
+
+ 
+

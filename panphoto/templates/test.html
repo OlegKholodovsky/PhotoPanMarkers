@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Тест панорамы</title>
+    <!-- Подключаем CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #viewer {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="viewer"></div>
+
+    <!-- Правильный порядок подключения скриптов -->
+    <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uevent@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+
+    <script>
+
+    </script>
+    <script>
+        // Ждем полной загрузки страницы
+        window.addEventListener('load', function() {
+            try {
+                const viewer = new PhotoSphereViewer.Viewer({
+                    container: document.getElementById('viewer'),
+                    panorama: '{{ panorama.image.url }}',
+                    loadingImg: "{% static 'images/loader.gif' %}",
+                    loadingTxt: 'Загрузка панорамы...',
+                    touchmoveTwoFingers: true,
+                    mousewheelCtrlKey: true,
+                    navbar: [
+                        'zoom',
+                        'move',
+                        'download',
+                        'fullscreen'
+                    ],
+                    plugins: [
+                        [PhotoSphereViewer.MarkersPlugin, {
+                            // Маркеры
+                            markers: [
+                                {% for marker in markers %}
+                                {
+                                    id: 'marker-{{ marker.id }}',
+                                    longitude: {{ marker.longitude }},
+                                    latitude: {{ marker.latitude }},
+                                    image: '{% static "images/pin-red.png" %}',
+                                    width: {{ marker.size.width }},
+                                    height: {{ marker.size.height }},
+                                    anchor: 'bottom center',
+                                    tooltip: {
+                                        content: '{{ marker.text }}',
+                                        className: 'psv-marker-tooltip'
+                                    },
+                                    data: {
+                                        {% if marker.linked_panorama %}
+                                        linkedPanoramaId: {{ marker.linked_panorama.id }}
+                                        {% endif %}
+                                    }
+                                },
+                                {% endfor %}
+                            ]
+                        }]
+                    ]
+                });
+                
+                console.log('Viewer initialized successfully');
+            } catch (e) {
+                console.error('Viewer initialization error:', e);
+            }
+        });
+    </script>
+</body>
+</html>

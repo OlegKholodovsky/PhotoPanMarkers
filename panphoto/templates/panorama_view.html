@@ -1,0 +1,58 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <h1>{{ panorama.title }}</h1>
+<pre>
+Панорама: {{ panorama }}
+Изображение: {{ panorama.image.url }}
+Маркеры: {{ markers|length }}
+{% for marker in markers %}
+Маркер {{ forloop.counter }}: {{ marker.text }} → {{ marker.linked_panorama.id|default:"Нет ссылки" }}
+{% endfor %}
+</pre>
+    <div id="viewer"></div>
+
+    
+    <script>
+        const viewer = new PhotoSphereViewer.Viewer({
+            container: document.querySelector('#viewer'),
+            panorama: '{{ panorama.image.url }}',
+            plugins: [
+                [PhotoSphereViewer.MarkersPlugin, {
+                    markers: [
+                        {% for marker in markers %}
+                        {
+                            id: 'marker-{{ marker.id }}',
+                            longitude: {{ marker.longitude }},
+                            latitude: {{ marker.latitude }},
+
+                            width: {{ marker.size.width|default:32 }},
+                            height: {{ marker.size.height|default:32 }},
+                            anchor: 'bottom center',
+                            tooltip: {
+                                content: '{{ marker.text }}',
+                                className: 'marker-tooltip'
+                            },
+                            data: {
+                                {% if marker.linked_panorama %}
+                                linkedPanoramaId: {{ marker.linked_panorama.id }}
+                                {% endif %}
+                            }
+                        },
+                        {% endfor %}
+                    ]
+                }]
+            ]
+        });
+
+        // Обработка клика на маркер
+        viewer.on('select-marker', (e, marker) => {
+            if (marker.data.linkedPanoramaId) {
+                window.location.href = `/panorama/${marker.data.linkedPanoramaId}/`;
+            }
+        });
+    </script>
+</body>
+{% endblock content %}

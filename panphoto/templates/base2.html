@@ -1,0 +1,28 @@
+<!-- templates/base.html -->
+ {% load static %}
+ <!DOCTYPE html>
+ <html>
+ <head>
+    <meta charset="utf-8">
+    <title>Панорамный тур</title>
+    <!-- Подключаем CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">  
+    <!-- Обязательные зависимости -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three/build/three.module.js",
+                "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5/index.module.js",
+                "@photo-sphere-viewer/markers-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/markers-plugin@5/index.module.js"
+            }
+        }
+    </script>
+    
+
+    <link rel="stylesheet" href="{% static '/css/global.css' %}">
+
+</head>
+
+{% block content %}
+{% endblock content %}
+</html>

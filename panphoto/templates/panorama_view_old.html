@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ panorama.title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.css">
+    <style>
+        #viewer { width: 100%; height: 100vh; }
+        .marker-tooltip {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ panorama.title }}</h1>
+<pre>
+Панорама: {{ panorama }}
+Изображение: {{ panorama.image.url }}
+Маркеры: {{ markers|length }}
+{% for marker in markers %}
+Маркер {{ forloop.counter }}: {{ marker.text }} → {{ marker.linked_panorama.id|default:"Нет ссылки" }}
+{% endfor %}
+</pre>
+    <div id="viewer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/plugins/markers.min.js"></script>
+    
+    <script>
+        const viewer = new PhotoSphereViewer.Viewer({
+            container: document.querySelector('#viewer'),
+            panorama: '{{ panorama.image.url }}',
+            plugins: [
+                [PhotoSphereViewer.MarkersPlugin, {
+                    markers: [
+                        {% for marker in markers %}
+                        {
+                            id: 'marker-{{ marker.id }}',
+                            longitude: {{ marker.longitude }},
+                            latitude: {{ marker.latitude }},
+                            image: '{% static "panorama/markers/pin-red.png" %}',
+                            width: {{ marker.size.width|default:32 }},
+                            height: {{ marker.size.height|default:32 }},
+                            anchor: 'bottom center',
+                            tooltip: {
+                                content: '{{ marker.text }}',
+                                className: 'marker-tooltip'
+                            },
+                            data: {
+                                {% if marker.linked_panorama %}
+                                linkedPanoramaId: {{ marker.linked_panorama.id }}
+                                {% endif %}
+                            }
+                        },
+                        {% endfor %}
+                    ]
+                }]
+            ]
+        });
+
+        // Обработка клика на маркер
+        viewer.on('select-marker', (e, marker) => {
+            if (marker.data.linkedPanoramaId) {
+                window.location.href = `/panorama/${marker.data.linkedPanoramaId}/`;
+            }
+        });
+    </script>
+</body>
+</html>

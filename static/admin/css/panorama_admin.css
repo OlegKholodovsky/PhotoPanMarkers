@@ -1,0 +1,51 @@
+/* Контейнер панорамы */
+.panorama-container {
+    position: relative;
+    margin: 20px 0;
+}
+
+.panorama-image {
+    max-width: 100%;
+    border: 2px dashed #ccc;
+    cursor: crosshair;
+}
+
+/* Кнопка добавления маркера */
+.add-marker-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #417690;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Превью маркера в таблице */
+.marker-preview {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+/* Поля координат */
+.coord-input {
+    width: 80px !important;
+}
+
+
+/* Стиль кнопки "Добавить маркер" */
+a.button {
+    background: #417690;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+a.button:hover {
+    background: #205067;
+}
